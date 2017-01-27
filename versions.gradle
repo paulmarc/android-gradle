@@ -1,0 +1,82 @@
+def versionMajor = 1
+def versionMinor = 3
+def versionPatch = 7
+def versionPropsFile = file('version.properties')
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        def code = versionProps['VERSION_CODE'].toInteger() + 1
+        def vMaj = versionProps['VERSION_MAJOR'].toInteger()
+        def vMin = versionProps['VERSION_MINOR'].toInteger()
+        def vPat = versionProps['VERSION_PATCH'].toInteger()
+        def defaultCode = 1
+
+        if (vMaj != versionMajor || vMin != versionMinor || vPat != versionPatch) {
+            versionProps['VERSION_CODE'] = defaultCode.toString()
+            versionProps['VERSION_MAJOR'] = versionMajor.toString()
+            versionProps['VERSION_MINOR'] = versionMinor.toString()
+            versionProps['VERSION_PATCH'] = versionPatch.toString()
+        }
+        else {
+            versionProps['VERSION_CODE'] = code.toString()
+        }
+        versionProps.store(versionPropsFile.newWriter(), null)
+
+        defaultConfig {
+
+            applicationId "le.package.name"
+            minSdkVersion 16
+            targetSdkVersion 25
+            versionCode versionMajor * 1000000 + versionMinor * 100000 + versionPatch * 10000 + code
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        }
+    }
+    else {
+        throw new GradleException("Could not read version.properties!")
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+        }
+    }
+
+    productFlavors {
+        internal {
+            applicationId 'le.package.name.internal'
+        }
+        production {
+            applicationId 'le.package.name'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent,
+                    output.outputFile.name.replace(".apk", "-${variant.versionCode}.apk"))
+        }
+    }
+
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
+        warning 'UnusedResources'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
+}
