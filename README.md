@@ -11,9 +11,9 @@ Gradle Scripts useful to me and hopefully you.
   * Add the code in versions.gradle to your build.gradle;
   * Create 'version.properties' file, with the following:  
 ```bash
-VERSION_MINOR=3
-VERSION_PATCH=7
-VERSION_CODE=423
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_CODE=100
 VERSION_MAJOR=1
 ```
   * Build and generate your APK!  
