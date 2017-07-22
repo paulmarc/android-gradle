@@ -4,8 +4,8 @@ def versionPatch = 7
 def versionPropsFile = file('version.properties')
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion androidCompileSdkVersion.toInteger()
+    buildToolsVersion androidBuildToolsVersion
 
     if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
